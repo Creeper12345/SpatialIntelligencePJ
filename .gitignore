@@ -1,0 +1,30 @@
+# Large local artifacts
+data/
+checkpoints/**/*.pt
+checkpoints/**/*.pth
+checkpoints/**/*.ckpt
+wandb/
+tb_logs/
+
+# Python/cache
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local env/editor
+.env
+.venv/
+.DS_Store
+.vscode/
+.idea/
+
+# Archives
+*.tar
+*.tar.gz
+*.zip
+
+# LaTeX / local generated report files
+*.aux
+*.log
+*.out
+*.xdv
