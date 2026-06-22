@@ -1,50 +1,49 @@
-# Spatial Intelligence HW3 - LeRobot CALVIN ACT
+# 空间智能 HW3 - LeRobot CALVIN ACT
 
-This repository contains the Task 2 code for the course project: cross-environment generalization of ACT policies on the CALVIN LeRobot dataset.
+本仓库为课程项目 Task 2 的提交代码，主要研究 ACT 策略在 CALVIN LeRobot 数据集上的跨环境泛化能力。
 
-The repository includes:
+仓库内容包括：
 
-- ACT training code for single-environment and multi-environment imitation learning.
-- Zero-shot evaluation code on unseen CALVIN Env D.
-- Action chunking analysis scripts.
-- W&B-compatible training configuration and result logs.
-- Reproducible plotting scripts and exported result tables.
+- 单环境与多环境模仿学习的 ACT 训练代码。
+- 未见环境 D 上的 zero-shot 评估代码。
+- ACT 动作分块（Action Chunking）分析脚本。
+- 与 W&B 兼容的训练配置和实验结果日志。
+- 可复现实验图表的绘图脚本和导出的结果表格。
 
-Large artifacts are intentionally not tracked:
+以下大文件不纳入 Git 版本管理：
 
-- CALVIN dataset files under `data/`.
-- Model weights under `checkpoints/*.pt`.
-- W&B binary run folders and TensorBoard logs.
+- `data/` 下的 CALVIN 数据集文件。
+- `checkpoints/*.pt` 模型权重文件。
+- W&B 二进制 run 目录与 TensorBoard 日志。
 
-Model weights should be downloaded separately from the submitted cloud-drive link and placed under `checkpoints/` as described below.
+模型权重需要从提交材料中的云盘链接单独下载，并按下文说明放入 `checkpoints/` 目录。
 
-## Repository Structure
+## 仓库结构
 
 ```text
 .
-├── train_act.py                     # ACT training entry point
-├── eval_zeroshot.py                 # Env D zero-shot Action L1 evaluation
-├── environment.yml                  # Conda environment specification
-├── requirements-local.txt           # Minimal local plotting dependencies
-├── src/calvin_lerobot/              # CALVIN LeRobot dataset wrapper
+├── train_act.py                     # ACT 训练入口
+├── eval_zeroshot.py                 # Env D zero-shot Action L1 评估入口
+├── environment.yml                  # Conda 环境配置
+├── requirements-local.txt           # 本地绘图所需的最小依赖
+├── src/calvin_lerobot/              # CALVIN LeRobot 数据集读取封装
 ├── scripts/
-│   ├── download_calvin.sh           # Dataset download helper
-│   ├── train_single.sh              # A-only training
-│   ├── train_multi.sh               # A+B+C joint training
-│   ├── train_pretrained_A.sh        # A-only ImageNet-init ablation
-│   ├── eval.sh                      # Zero-shot evaluation wrapper
-│   ├── analyze_eval_chunks.py       # Action chunk horizon analysis
-│   └── plot_results.py              # Plot result figures
-├── logs/                            # Exported evaluation CSV/JSON results
-├── plots/                           # Generated result figures
-├── reports/                         # Runbook and report notes
+│   ├── download_calvin.sh           # 数据集下载脚本
+│   ├── train_single.sh              # 单环境 A 训练脚本
+│   ├── train_multi.sh               # A+B+C 多环境联合训练脚本
+│   ├── train_pretrained_A.sh        # ImageNet 初始化的 A-only 消融训练脚本
+│   ├── eval.sh                      # zero-shot 评估封装脚本
+│   ├── analyze_eval_chunks.py       # Action chunk horizon 分析脚本
+│   └── plot_results.py              # 实验结果绘图脚本
+├── logs/                            # 导出的评估 CSV/JSON 结果
+├── plots/                           # 生成的实验图表
 └── checkpoints/
-    └── MANIFEST.md                  # Expected model-weight files
+    └── MANIFEST.md                  # 期望的模型权重文件说明
 ```
 
-## Environment Setup
+## 环境配置
 
-### Option A: Create a Conda environment
+### 方式一：创建 Conda 环境
 
 ```bash
 conda env create -f environment.yml
@@ -52,63 +51,63 @@ conda activate lerobot_calvin
 pip install -e ./src
 ```
 
-`environment.yml` includes PyTorch, LeRobot, W&B, plotting dependencies, and optional CALVIN simulation dependencies. If the CALVIN simulation stack is difficult to install on your server, the dataset-level Action L1 evaluation still works without running the simulator.
+`environment.yml` 包含 PyTorch、LeRobot、W&B、绘图依赖，以及可选的 CALVIN 仿真依赖。如果服务器上较难安装 CALVIN simulation 相关组件，数据集级 Action L1 评估仍然可以独立运行。
 
-### Option B: Use an existing CUDA/PyTorch environment
+### 方式二：使用已有 CUDA/PyTorch 环境
 
-On the training server used for this project, an existing CUDA environment was used. After activating that environment, install only the missing Python packages:
+本项目训练时使用服务器上已有的 CUDA 环境。激活已有环境后，只需要补充缺失的 Python 包：
 
 ```bash
 pip install lerobot wandb huggingface_hub datasets einops timm transformers accelerate
 pip install -e ./src
 ```
 
-For local result plotting only:
+如果只在本地重绘结果图，安装最小绘图依赖即可：
 
 ```bash
 pip install -r requirements-local.txt
 ```
 
-## Data Preparation
+## 数据准备
 
-The project uses the LeRobot-format CALVIN dataset from:
+本项目使用 LeRobot 格式的 CALVIN 数据集：
 
 ```text
 xiaoma26/calvin-lerobot
 ```
 
-Environment mapping:
+环境与数据划分对应关系如下：
 
-| CALVIN split | Environment | Usage |
+| CALVIN split | 环境 | 用途 |
 |---|---|---|
-| `splitA` | Env A | A-only training and ABC training |
-| `splitB` | Env B | ABC training |
-| `splitC` | Env C | ABC training |
-| `splitD` | Env D | Zero-shot evaluation only |
+| `splitA` | Env A | A-only 训练与 ABC 训练 |
+| `splitB` | Env B | ABC 训练 |
+| `splitC` | Env C | ABC 训练 |
+| `splitD` | Env D | 仅用于 zero-shot 评估 |
 
-Download data into `./data`:
+将数据下载到 `./data`：
 
 ```bash
-# Download Env A and Env D first.
+# 先下载 Env A 与 Env D。
 bash scripts/download_calvin.sh ./data single
 
-# Download Env B and Env C for multi-environment training.
+# 再下载 Env B 与 Env C，用于多环境训练。
 bash scripts/download_calvin.sh ./data bc
 
-# Or download all splits at once.
+# 或一次性下载全部 split。
 bash scripts/download_calvin.sh ./data all
 ```
 
-Validate the downloaded dataset:
+下载后建议先校验数据完整性：
 
 ```bash
 python scripts/check_calvin_integrity.py ./data
 python scripts/check_calvin_integrity.py ./data --check-parquet --max-parquet 50
 ```
 
-## Model Weights
+## 模型权重
 
-Model weights are not stored in this Git repository. After downloading the submitted weight files, place them as:
+模型权重不存放在 Git 仓库中。下载提交材料中的权重文件后，请按以下目录结构放置：
 
 ```text
 checkpoints/
@@ -118,23 +117,23 @@ checkpoints/
     └── best_model.pt
 ```
 
-The submitted upload package also contains two convenience files:
+单独上传的权重文件夹中还提供了两个便于识别的文件名：
 
 ```text
 single_A_best_model.pt
 multi_ABC_best_model.pt
 ```
 
-If using those names directly, either copy them into the directory layout above or update the checkpoint paths in the evaluation command.
+如果直接使用这两个文件名，可以将它们复制到上面的目录结构中，也可以在评估命令中手动修改 checkpoint 路径。
 
-## Training
+## 训练
 
-All main experiments use the same ACT architecture and hyperparameters. The key controlled variable is the training data:
+主实验使用相同的 ACT 网络结构和超参数，主要控制变量是训练数据来源：
 
-- A-only baseline: Env A only.
-- ABC model: mixed Env A+B+C.
+- A-only baseline：仅使用 Env A 训练。
+- ABC model：混合使用 Env A、Env B、Env C 训练。
 
-### Train A-only baseline
+### 训练 A-only baseline
 
 ```bash
 WANDB_MODE=offline torchrun --nproc_per_node=2 --master_port=29500 train_act.py \
@@ -148,7 +147,7 @@ WANDB_MODE=offline torchrun --nproc_per_node=2 --master_port=29500 train_act.py 
   --wandb_mode offline
 ```
 
-### Train ABC joint model
+### 训练 ABC 多环境模型
 
 ```bash
 WANDB_MODE=offline torchrun --nproc_per_node=2 --master_port=29501 train_act.py \
@@ -162,15 +161,15 @@ WANDB_MODE=offline torchrun --nproc_per_node=2 --master_port=29501 train_act.py 
   --wandb_mode offline
 ```
 
-### Optional: Train A-only with ImageNet-initialized ResNet18
+### 可选实验：使用 ImageNet 初始化的 ResNet18 训练 A-only
 
-Prepare ResNet18 weights on a machine with internet access:
+先在可联网机器上准备 ResNet18 权重：
 
 ```bash
 python scripts/prepare_resnet18.py --cache-dir /path/to/torch_cache
 ```
 
-Then train:
+然后训练：
 
 ```bash
 export TORCH_HOME=/path/to/torch_cache
@@ -187,7 +186,7 @@ WANDB_MODE=offline torchrun --nproc_per_node=2 --master_port=29510 train_act.py 
   --pretrained_backbone
 ```
 
-## Testing and Evaluation
+## 测试与评估
 
 ### Env D zero-shot Action L1
 
@@ -202,9 +201,9 @@ python eval_zeroshot.py \
   --out_path ./logs/eval_envD_results.json
 ```
 
-This computes dataset-level Action L1 Error on the unseen Env D split. The report uses this metric because the server environment did not include `calvin_env` and `calvin_agent` for simulation success-rate evaluation.
+该命令在完全未见过的 Env D split 上计算数据集级 Action L1 Error。最终报告采用该指标，是因为服务器环境中没有可用的 `calvin_env` 与 `calvin_agent`，无法稳定运行仿真 success rate；作业要求允许使用动作误差作为跨环境评估指标。
 
-### Pretrained A-only vs ABC zero-shot comparison
+### Pretrained A-only 与 ABC 的 zero-shot 对比
 
 ```bash
 python eval_zeroshot.py \
@@ -217,7 +216,7 @@ python eval_zeroshot.py \
   --out_path ./logs/eval_envD_pretrainedA_vs_ABC_results.json
 ```
 
-### Action chunk horizon analysis
+### Action chunk horizon 分析
 
 ```bash
 python scripts/analyze_eval_chunks.py \
@@ -229,13 +228,13 @@ python scripts/analyze_eval_chunks.py \
   --num_workers 8
 ```
 
-### Plot result figures
+### 绘制结果图
 
 ```bash
 python scripts/plot_results.py --log_dir logs --out_dir plots
 ```
 
-Expected outputs:
+预期输出：
 
 ```text
 plots/envD_per_dim_l1.png
@@ -248,27 +247,27 @@ plots/envD_pretrainedA_vs_ABC_per_dim_l1.png
 plots/envD_pretrainedA_vs_ABC_per_dim_l1.pdf
 ```
 
-## Main Results
+## 主要结果
 
-Env D zero-shot Action L1:
+Env D zero-shot Action L1：
 
-| Model | Training environments | Mean Action L1 |
+| 模型 | 训练环境 | Mean Action L1 |
 |---|---|---:|
 | ACT A-only | A | 0.1701 |
 | ACT ABC | A+B+C | 0.1572 |
 
-The ABC model reduces Env D mean Action L1 by 7.6% relative to the A-only baseline.
+与 A-only baseline 相比，ABC 多环境模型在 Env D 上将平均 Action L1 降低了 7.6%。
 
-Auxiliary pretrained-backbone result:
+辅助的 pretrained backbone 实验结果如下：
 
-| Model | Training environments | Backbone initialization | Mean Action L1 on Env D |
+| 模型 | 训练环境 | Backbone 初始化 | Env D Mean Action L1 |
 |---|---|---|---:|
-| ACT A-only | A | random | 0.1701 |
-| ACT A-only + ImageNet | A | ImageNet pretrained | 0.1678 |
-| ACT ABC | A+B+C | random | 0.1572 |
+| ACT A-only | A | 随机初始化 | 0.1701 |
+| ACT A-only + ImageNet | A | ImageNet 预训练 | 0.1678 |
+| ACT ABC | A+B+C | 随机初始化 | 0.1572 |
 
-The pretrained A-only model improves slightly over the random-initialized A-only baseline, but still underperforms the multi-environment ABC model. This supports the conclusion that broader visual-environment coverage contributes more to cross-environment robustness than backbone initialization alone.
+ImageNet 初始化的 A-only 模型相较随机初始化 A-only baseline 有小幅提升，但仍弱于 ABC 多环境模型。该结果支持报告中的结论：相比单纯依赖 backbone 初始化，覆盖更多视觉环境的数据更有助于提升跨环境鲁棒性。
 
-## Notes on Success Rate
+## 关于 Success Rate
 
-`eval_zeroshot.py` includes an optional `--run_simulation` flag for CALVIN simulation success-rate evaluation. It requires `calvin_env` and `calvin_agent`. These dependencies were not available in the final server environment, so the submitted report uses Action L1 Error, which is allowed by the assignment as an alternative metric to success rate.
+`eval_zeroshot.py` 保留了可选的 `--run_simulation` 参数，用于 CALVIN 仿真 success rate 评估。该功能需要安装 `calvin_env` 与 `calvin_agent`。最终服务器环境中缺少这些依赖，因此提交报告使用 Action L1 Error 作为替代评价指标。
