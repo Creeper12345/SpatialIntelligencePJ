@@ -11,7 +11,6 @@ task1/
 └── fusion/                # 物体与背景融合、渲染
 ```
 
-当前目录约 526MB，未包含超过 50MB 的单文件，也没有超过 GitHub 100MB 硬限制的文件。
 
 ## 模块说明
 
@@ -27,13 +26,4 @@ task1/
 - `threestudio`: 用于物体 B DreamFusion 和物体 C Zero123 训练、导出 mesh。
 - `COLMAP`: 用于物体 A 多视角相机位姿估计和稠密重建。
 
-第三方仓库源码仍只保留占位目录，不复制完整仓库。
-
-## 仍未包含的大文件
-
-- `*.ckpt` checkpoint，单文件约 151MB，超过 GitHub 普通文件硬限制。
-- COLMAP `database.db`，约 52MB，虽然可上传但不适合 Git 仓库。
-- 背景 3DGS 点云，例如 `output/garden/point_cloud/.../point_cloud.ply`，约 789-899MB。
-- 融合后的完整 3DGS 点云 `fused_scene/point_cloud/iteration_99999/point_cloud.ply`，约 975MB。
-- Mip-NeRF 360 `garden` 原始数据集，约 5.7GB。
-- threestudio 自动复制的完整第三方 `code/` 快照。
+第三方仓库源码只保留占位目录，不复制完整仓库。
