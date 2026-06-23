@@ -79,6 +79,14 @@ Task 2 使用 LeRobot 格式的 CALVIN 数据集：
 xiaoma26/calvin-lerobot
 ```
 
+下载脚本默认使用 HuggingFace 镜像站：
+
+```text
+https://hf-mirror.com/datasets/xiaoma26/calvin-lerobot/tree/main
+```
+
+脚本内部通过 `HF_ENDPOINT=https://hf-mirror.com` 和 `repo_id="xiaoma26/calvin-lerobot"` 调用 `huggingface_hub.snapshot_download`。如果需要改回官方 HuggingFace，可在运行前手动设置其他 `HF_ENDPOINT`。
+
 数据划分与用途如下：
 
 | CALVIN split | 环境 | 用途 |

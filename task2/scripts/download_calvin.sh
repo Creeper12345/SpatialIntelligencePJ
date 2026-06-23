@@ -10,13 +10,12 @@ set -e
 
 SAVE_DIR=${1:-"./data"}
 MODE=${2:-"all"}
+export HF_ENDPOINT="${HF_ENDPOINT:-https://hf-mirror.com}"
 
 echo "Downloading CALVIN LeRobot data"
 echo "Output: $SAVE_DIR"
 echo "Mode: $MODE"
-if [ -n "$HF_ENDPOINT" ]; then
-    echo "HF_ENDPOINT: $HF_ENDPOINT"
-fi
+echo "HF_ENDPOINT: $HF_ENDPOINT"
 
 mkdir -p "$SAVE_DIR"
 
