@@ -10,7 +10,3 @@
 - `data/mask_preview.png`: 分割效果预览。
 - `results/gs_output_masked/`: masked 数据训练得到的 3DGS 小型输出、metadata、orbit frames/video 和日志。
 - `results_preview/`: 报告中使用的物体 A 预览图。
-
-## 未包含
-
-COLMAP `distorted/database.db` 和更大的中间缓存未放入提交目录。
