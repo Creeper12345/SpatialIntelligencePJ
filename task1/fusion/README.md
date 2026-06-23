@@ -10,7 +10,3 @@
 - `results/cameras.json`, `results/cfg_args`: 融合场景 metadata。
 - `results_preview/`: 报告中使用的融合场景预览图。
 - `external_repos/gaussian-splatting/`: 第三方 3DGS 仓库占位目录，源码未复制。
-
-## 未包含
-
-融合后的完整 PLY 点云未放入提交目录；`fused_scene/point_cloud/iteration_99999/point_cloud.ply` 约 975MB，不能直接上传 GitHub。
