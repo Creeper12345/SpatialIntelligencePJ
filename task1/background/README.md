@@ -12,6 +12,3 @@
 - `results/*.log`: 背景训练/渲染日志。
 - `external_repos/gaussian-splatting/`: 第三方 3DGS 仓库占位目录，源码未复制。
 
-## 未包含
-
-Mip-NeRF 360 原始 garden 数据、背景完整 3DGS 点云和 checkpoint 未放入提交目录；完整点云单文件接近 900MB。
