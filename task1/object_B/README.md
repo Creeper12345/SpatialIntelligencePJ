@@ -9,6 +9,3 @@
 - `results_preview/`: 最终篮球渲染预览图。
 - `external_repos/threestudio/`: 第三方 threestudio 仓库占位目录，源码未复制。
 
-## 未包含
-
-checkpoint 和 threestudio 自动备份的完整第三方源码快照未放入提交目录。
