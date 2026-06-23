@@ -1,0 +1,1 @@
+Namespace(data_device='cpu', depths='', eval=False, images='images_4', model_path='/remote-home/qyliu/class/final-pj/fused_scene', resolution=4, sh_degree=3, source_path='/remote-home/qyliu/class/final-pj/data/nerf360/garden', train_test_exp=False, white_background=False)

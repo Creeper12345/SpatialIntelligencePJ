@@ -1,0 +1,2 @@
+python launch.py --config ../task1/threestudio_outputs/task1_text_b/dreamfusion_sd_basketball_6000@20260531-151908/configs/parsed.yaml --train --gpu 1 resume=../task1/threestudio_outputs/task1_text_b/dreamfusion_sd_basketball_6000@20260531-151908/ckpts/epoch=0-step=5000.ckpt trainer.max_steps=6000
+Namespace(config='../task1/threestudio_outputs/task1_text_b/dreamfusion_sd_basketball_6000@20260531-151908/configs/parsed.yaml', export=False, gpu='1', gradio=False, test=False, train=True, typecheck=False, validate=False, verbose=False)

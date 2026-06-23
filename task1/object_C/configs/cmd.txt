@@ -1,0 +1,2 @@
+python launch.py --config configs/stable-zero123.yaml --train --gpu 1 data.image_path=./load/images/task1_object_rgba.png exp_root_dir=../task1/threestudio_outputs name=task1_zero123 tag=stable_lowmem trainer.max_steps=600 data.random_camera.batch_size=[4,2,1] system.renderer.num_samples_per_ray=256 system.loss.lambda_3d_normal_smooth=0.0 system.loss.lambda_normal_smooth=0.0
+Namespace(config='configs/stable-zero123.yaml', export=False, gpu='1', gradio=False, test=False, train=True, typecheck=False, validate=False, verbose=False)
