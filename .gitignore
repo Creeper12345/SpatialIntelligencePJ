@@ -1,10 +1,20 @@
 # Large local artifacts
 data/
+task2/data/
 checkpoints/**/*.pt
 checkpoints/**/*.pth
 checkpoints/**/*.ckpt
+task2/checkpoints/**/*.pt
+task2/checkpoints/**/*.pth
+task2/checkpoints/**/*.ckpt
 wandb/
+task2/wandb/
 tb_logs/
+task2/tb_logs/
+logs/
+task2/logs/
+plots/
+task2/plots/
 
 # Python/cache
 __pycache__/

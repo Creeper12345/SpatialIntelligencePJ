@@ -1,27 +1,35 @@
-# 空间智能 HW3 - LeRobot CALVIN ACT
+# 深度学习与空间智能 HW3 项目提交
 
-本仓库为课程项目 Task 2 的提交代码，主要研究 ACT 策略在 CALVIN LeRobot 数据集上的跨环境泛化能力。
-
-仓库内容包括：
-
-- 单环境与多环境模仿学习的 ACT 训练代码。
-- 未见环境 D 上的 zero-shot 评估代码。
-- ACT 动作分块（Action Chunking）分析脚本。
-- 与 W&B 兼容的训练配置和实验结果日志。
-- 可复现实验图表的绘图脚本和导出的结果表格。
-
-以下大文件不纳入 Git 版本管理：
-
-- `data/` 下的 CALVIN 数据集文件。
-- `checkpoints/*.pt` 模型权重文件。
-- W&B 二进制 run 目录与 TensorBoard 日志。
-
-模型权重需要从提交材料中的云盘链接单独下载，并按下文说明放入 `checkpoints/` 目录。
-
-## 仓库结构
+本仓库按照课程提交要求组织代码，根目录只保留项目说明与两个任务目录：
 
 ```text
 .
+├── README.md
+├── task1/                 # Task 1：3D 视觉资产重建、生成与场景融合代码目录
+└── task2/                 # Task 2：CALVIN 上的 ACT 策略训练与跨环境评估代码
+```
+
+当前仓库不提交数据集、训练日志、实验结果图片和模型权重。模型权重单独上传，见“模型权重”一节。
+
+## Task 1 目录
+
+`task1/` 预留为 3D 视觉任务代码目录，结构如下：
+
+```text
+task1/
+├── object_A/              # 多视角真实物体重建
+├── object_B/              # 文本到 3D 资产生成
+├── object_C/              # 单图到 3D 资产生成
+├── background/            # 背景场景重建
+└── fusion/                # 物体与背景融合、渲染
+```
+
+## Task 2 目录
+
+Task 2 使用 LeRobot 框架中的 ACT 策略，在 CALVIN 数据集上比较单环境训练与多环境训练的跨环境泛化能力。核心代码位于 `task2/`：
+
+```text
+task2/
 ├── train_act.py                     # ACT 训练入口
 ├── eval_zeroshot.py                 # Env D zero-shot Action L1 评估入口
 ├── environment.yml                  # Conda 环境配置
@@ -35,107 +43,85 @@
 │   ├── eval.sh                      # zero-shot 评估封装脚本
 │   ├── analyze_eval_chunks.py       # Action chunk horizon 分析脚本
 │   └── plot_results.py              # 实验结果绘图脚本
-├── logs/                            # 导出的评估 CSV/JSON 结果
-├── plots/                           # 生成的实验图表
 └── checkpoints/
     └── MANIFEST.md                  # 期望的模型权重文件说明
 ```
 
-## 环境配置
+## Requirements
 
-### 方式一：创建 Conda 环境
+推荐使用 Conda 创建环境：
 
 ```bash
+cd task2
 conda env create -f environment.yml
 conda activate lerobot_calvin
-pip install -e ./src
 ```
 
-`environment.yml` 包含 PyTorch、LeRobot、W&B、绘图依赖，以及可选的 CALVIN 仿真依赖。如果服务器上较难安装 CALVIN simulation 相关组件，数据集级 Action L1 评估仍然可以独立运行。
-
-### 方式二：使用已有 CUDA/PyTorch 环境
-
-本项目训练时使用服务器上已有的 CUDA 环境。激活已有环境后，只需要补充缺失的 Python 包：
+如果服务器已有 CUDA/PyTorch 环境，也可以在激活已有环境后安装必要依赖：
 
 ```bash
+cd task2
 pip install lerobot wandb huggingface_hub datasets einops timm transformers accelerate
-pip install -e ./src
 ```
 
-如果只在本地重绘结果图，安装最小绘图依赖即可：
+如果只需要在本地重绘图表，可安装最小绘图依赖：
 
 ```bash
+cd task2
 pip install -r requirements-local.txt
 ```
 
 ## 数据准备
 
-本项目使用 LeRobot 格式的 CALVIN 数据集：
+Task 2 使用 LeRobot 格式的 CALVIN 数据集：
 
 ```text
 xiaoma26/calvin-lerobot
 ```
 
-环境与数据划分对应关系如下：
+数据划分与用途如下：
 
 | CALVIN split | 环境 | 用途 |
 |---|---|---|
 | `splitA` | Env A | A-only 训练与 ABC 训练 |
 | `splitB` | Env B | ABC 训练 |
 | `splitC` | Env C | ABC 训练 |
-| `splitD` | Env D | 仅用于 zero-shot 评估 |
+| `splitD` | Env D | zero-shot 测试 |
 
-将数据下载到 `./data`：
+下载数据到 `task2/data`：
 
 ```bash
-# 先下载 Env A 与 Env D。
+cd task2
+
+# 下载 Env A 与 Env D。
 bash scripts/download_calvin.sh ./data single
 
-# 再下载 Env B 与 Env C，用于多环境训练。
+# 下载 Env B 与 Env C，用于多环境训练。
 bash scripts/download_calvin.sh ./data bc
 
 # 或一次性下载全部 split。
 bash scripts/download_calvin.sh ./data all
 ```
 
-下载后建议先校验数据完整性：
+校验数据完整性：
 
 ```bash
+cd task2
 python scripts/check_calvin_integrity.py ./data
 python scripts/check_calvin_integrity.py ./data --check-parquet --max-parquet 50
 ```
 
-## 模型权重
+## Train
 
-模型权重不存放在 Git 仓库中。下载提交材料中的权重文件后，请按以下目录结构放置：
+主实验使用相同 ACT 网络结构和超参数，主要控制变量为训练环境：
 
-```text
-checkpoints/
-├── act_single_A_b256/
-│   └── best_model.pt
-└── act_multi_ABC_b256/
-    └── best_model.pt
-```
+- `act_single_A_b256`：仅使用 Env A 训练。
+- `act_multi_ABC_b256`：混合 Env A、Env B、Env C 训练。
 
-单独上传的权重文件夹中还提供了两个便于识别的文件名：
-
-```text
-single_A_best_model.pt
-multi_ABC_best_model.pt
-```
-
-如果直接使用这两个文件名，可以将它们复制到上面的目录结构中，也可以在评估命令中手动修改 checkpoint 路径。
-
-## 训练
-
-主实验使用相同的 ACT 网络结构和超参数，主要控制变量是训练数据来源：
-
-- A-only baseline：仅使用 Env A 训练。
-- ABC model：混合使用 Env A、Env B、Env C 训练。
-
-### 训练 A-only baseline
+训练 A-only baseline：
 
 ```bash
+cd task2
 WANDB_MODE=offline torchrun --nproc_per_node=2 --master_port=29500 train_act.py \
   --data_dir ./data \
   --envs A \
@@ -147,9 +133,10 @@ WANDB_MODE=offline torchrun --nproc_per_node=2 --master_port=29500 train_act.py 
   --wandb_mode offline
 ```
 
-### 训练 ABC 多环境模型
+训练 ABC 多环境模型：
 
 ```bash
+cd task2
 WANDB_MODE=offline torchrun --nproc_per_node=2 --master_port=29501 train_act.py \
   --data_dir ./data \
   --envs A B C \
@@ -161,17 +148,11 @@ WANDB_MODE=offline torchrun --nproc_per_node=2 --master_port=29501 train_act.py 
   --wandb_mode offline
 ```
 
-### 可选实验：使用 ImageNet 初始化的 ResNet18 训练 A-only
-
-先在可联网机器上准备 ResNet18 权重：
+可选：训练 ImageNet 初始化的 A-only 消融模型。
 
 ```bash
+cd task2
 python scripts/prepare_resnet18.py --cache-dir /path/to/torch_cache
-```
-
-然后训练：
-
-```bash
 export TORCH_HOME=/path/to/torch_cache
 
 WANDB_MODE=offline torchrun --nproc_per_node=2 --master_port=29510 train_act.py \
@@ -186,11 +167,12 @@ WANDB_MODE=offline torchrun --nproc_per_node=2 --master_port=29510 train_act.py 
   --pretrained_backbone
 ```
 
-## 测试与评估
+## Test
 
-### Env D zero-shot Action L1
+将模型权重放入 `task2/checkpoints/` 后，运行 Env D zero-shot Action L1 评估：
 
 ```bash
+cd task2
 python eval_zeroshot.py \
   --data_dir ./data \
   --single_ckpt ./checkpoints/act_single_A_b256/best_model.pt \
@@ -201,24 +183,10 @@ python eval_zeroshot.py \
   --out_path ./logs/eval_envD_results.json
 ```
 
-该命令在完全未见过的 Env D split 上计算数据集级 Action L1 Error。最终报告采用该指标，是因为服务器环境中没有可用的 `calvin_env` 与 `calvin_agent`，无法稳定运行仿真 success rate；作业要求允许使用动作误差作为跨环境评估指标。
-
-### Pretrained A-only 与 ABC 的 zero-shot 对比
+运行 ACT action chunk horizon 分析：
 
 ```bash
-python eval_zeroshot.py \
-  --data_dir ./data \
-  --single_ckpt ./checkpoints/act_single_A_b256_pretrained/best_model.pt \
-  --multi_ckpt ./checkpoints/act_multi_ABC_b256/best_model.pt \
-  --eval_env D \
-  --batch_size 128 \
-  --num_workers 8 \
-  --out_path ./logs/eval_envD_pretrainedA_vs_ABC_results.json
-```
-
-### Action chunk horizon 分析
-
-```bash
+cd task2
 python scripts/analyze_eval_chunks.py \
   --data_dir ./data \
   --single_ckpt ./checkpoints/act_single_A_b256/best_model.pt \
@@ -228,46 +196,25 @@ python scripts/analyze_eval_chunks.py \
   --num_workers 8
 ```
 
-### 绘制结果图
+如需使用 CALVIN 仿真器计算 success rate，可在安装 `calvin_env` 与 `calvin_agent` 后添加 `--run_simulation`。当前提交报告采用数据集级 Action L1 Error，这是作业允许的跨环境评估指标。
 
-```bash
-python scripts/plot_results.py --log_dir logs --out_dir plots
-```
+## 模型权重
 
-预期输出：
+模型权重不放入 Git 仓库。请从单独提交的权重文件夹中获取最佳权重，并放置为：
 
 ```text
-plots/envD_per_dim_l1.png
-plots/envD_per_dim_l1.pdf
-plots/envD_chunk_horizon_l1.png
-plots/envD_chunk_horizon_l1.pdf
-plots/envD_chunk_improvement.png
-plots/envD_chunk_improvement.pdf
-plots/envD_pretrainedA_vs_ABC_per_dim_l1.png
-plots/envD_pretrainedA_vs_ABC_per_dim_l1.pdf
+task2/checkpoints/
+├── act_single_A_b256/
+│   └── best_model.pt
+└── act_multi_ABC_b256/
+    └── best_model.pt
 ```
 
-## 主要结果
+本次整理挑出的最佳模型文件为：
 
-Env D zero-shot Action L1：
+```text
+single_A_best_model.pt
+multi_ABC_best_model.pt
+```
 
-| 模型 | 训练环境 | Mean Action L1 |
-|---|---|---:|
-| ACT A-only | A | 0.1701 |
-| ACT ABC | A+B+C | 0.1572 |
-
-与 A-only baseline 相比，ABC 多环境模型在 Env D 上将平均 Action L1 降低了 7.6%。
-
-辅助的 pretrained backbone 实验结果如下：
-
-| 模型 | 训练环境 | Backbone 初始化 | Env D Mean Action L1 |
-|---|---|---|---:|
-| ACT A-only | A | 随机初始化 | 0.1701 |
-| ACT A-only + ImageNet | A | ImageNet 预训练 | 0.1678 |
-| ACT ABC | A+B+C | 随机初始化 | 0.1572 |
-
-ImageNet 初始化的 A-only 模型相较随机初始化 A-only baseline 有小幅提升，但仍弱于 ABC 多环境模型。该结果支持报告中的结论：相比单纯依赖 backbone 初始化，覆盖更多视觉环境的数据更有助于提升跨环境鲁棒性。
-
-## 关于 Success Rate
-
-`eval_zeroshot.py` 保留了可选的 `--run_simulation` 参数，用于 CALVIN 仿真 success rate 评估。该功能需要安装 `calvin_env` 与 `calvin_agent`。最终服务器环境中缺少这些依赖，因此提交报告使用 Action L1 Error 作为替代评价指标。
+这两个文件分别对应 A-only baseline 与 ABC 多环境模型的最佳 checkpoint。
